@@ -34,9 +34,9 @@ Follow his instructions!
 
 SPI
 To communicate properly with the IMU Board you need to patch Chibios (2.4.3) with the patch contained in the chibios_patch folder.
-
-From the console:
-cd <chibios_directory>
-cd os/hal/platforms/STM32
+<br>
+From the console:<br>
+cd 'your_chibios_directory'<br>
+cd os/hal/platforms/STM32<br>
 patch -p1 < chibios_spi_slave.patch
 
