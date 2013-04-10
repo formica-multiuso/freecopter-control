@@ -31,3 +31,12 @@ git clone https://github.com/jsnyder/arm-eabi-toolchain arm-cs-tools
 Follow his instructions!
 
 ---------------------------
+
+SPI
+To communicate properly with the IMU Board you need to patch Chibios (2.4.3) with the patch contained in the chibios_patch folder.
+
+From the console:
+cd <chibios_directory>
+cd os/hal/platforms/STM32
+patch -p1 < chibios_spi_slave.patch
+

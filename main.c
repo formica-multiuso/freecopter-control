@@ -72,10 +72,8 @@ int16_t Roll, Pitch, Yaw;
 
 static Mutex mtx_imu, mutex_motors;
 
-static uint8_t txbuf[5] = {0,0,0,0,0}; 		// SPI TX Buffer
-static uint8_t rxbuf[6] = {0,0,0,0,0,0};	// SPI RX Buffer
-int16_t rxbuf_16bit[5];
-int16_t txbuf_16bit[5];
+int16_t rxbuf_16bit[24];
+int16_t txbuf_16bit[24];
 
 icucnt_t last_width = 50;
 icucnt_t last_period = 50;
@@ -389,106 +387,6 @@ static const SPIConfig ls_spicfg = {
 
 
 /*===========================================================================*/
-/* Command line related.                                                     */
-/*===========================================================================*/
-
-#define SHELL_WA_SIZE   THD_WA_SIZE(2048)
-#define TEST_WA_SIZE    THD_WA_SIZE(256)
-
-static void cmd_mem(BaseChannel *chp, int argc, char *argv[]) {
-  size_t n, size;
-
-  (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: mem\r\n");
-    return;
-  }
-  n = chHeapStatus(NULL, &size);
-  chprintf(chp, "core free memory : %u bytes\r\n", chCoreStatus());
-  chprintf(chp, "heap fragments   : %u\r\n", n);
-  chprintf(chp, "heap free total  : %u bytes\r\n", size);
-}
-
-static void cmd_threads(BaseChannel *chp, int argc, char *argv[]) {
-  static const char *states[] = {THD_STATE_NAMES};
-  Thread *tp;
-
-  (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: threads\r\n");
-    return;
-  }
-  chprintf(chp, "    addr    stack prio refs     state time\r\n");
-  tp = chRegFirstThread();
-  do {
-    chprintf(chp, "%.8lx %.8lx %4lu %4lu %9s %lu\r\n",
-            (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
-            (uint32_t)tp->p_prio, (uint32_t)(tp->p_refs - 1),
-            states[tp->p_state], (uint32_t)tp->p_time);
-    tp = chRegNextThread(tp);
-  } while (tp != NULL);
-}
-
-static void cmd_test(BaseChannel *chp, int argc, char *argv[]) {
-  Thread *tp;
-
-  (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: test\r\n");
-    return;
-  }
-  tp = chThdCreateFromHeap(NULL, TEST_WA_SIZE, chThdGetPriority(),
-                           TestThread, chp);
-  if (tp == NULL) {
-    chprintf(chp, "out of memory\r\n");
-    return;
-  }
-  chThdWait(tp);
-}
-
-// Dynamic Thread allocation for USB
-//------------------------------------
-static WORKING_AREA(UsbThreadWA,128);
-
-static msg_t UsbThread(void *arg)
-{
-	BaseChannel *chp;
-	chp = (BaseChannel *)arg;
-	while(TRUE)
-	{	
-		//chMtxLock(&mtx_lsm); chMtxLock(&mtx_l3g); chMtxLock(&mtx_bmp);
-//		chprintf(chp,"%Ld:%Ld:%Ld:%d:%d:%d:%d:%d:%d:%d:%d\r\n",accelX,accelY,accelZ,gyroX,gyroY,gyroZ,magnX,magnY,magnZ,temperature,pressure);
-		//chMtxUnlock();//chMtxUnlock();chMtxUnlock();
-//		chMtxLock(&mutex_motors);
-		chprintf(chp,"CHANNELS:%d:%d:%d:%d:%d:%d:%d:%d:IMU:%d:%d:%d:%d:%d:%d:IMUCH:%d:%d:%d:%d:%d:RPY:%d:%d:%d\r\n",icu_ch[0],icu_ch[1],icu_ch[2],icu_ch[3],icu_ch[4],icu_ch[5],icu_ch[6],icu_ch[7],rxbuf[0],rxbuf[1],rxbuf[2],rxbuf[3],rxbuf[4],rxbuf[5],rxbuf_16bit[0],rxbuf_16bit[1],rxbuf_16bit[2],rxbuf_16bit[3],rxbuf_16bit[4],Roll,Pitch,Yaw);
-//		chMtxUnlock();
-		chThdSleepMilliseconds(25);		
-	}
-	return 0;
-}
-
-static void cmd_read_data(BaseChannel *chp, int argc, char *argv[]) {
-  Thread *tp;
-  tp = chThdCreateFromHeap(NULL, sizeof(UsbThreadWA), NORMALPRIO, UsbThread, chp);
-  chThdWait(tp);
-}
-
-//--------------------------------------
-
-static const ShellCommand commands[] = {
-  {"mem", cmd_mem},
-  {"threads", cmd_threads},
-  {"test", cmd_test},
-  {"read-data", cmd_read_data},
-  {NULL, NULL}
-};
-
-static const ShellConfig shell_cfg1 = {
-  (BaseChannel *)&SDU1,
-  commands
-};
-
-/*===========================================================================*/
 /* ICU STUFF								     */
 /*===========================================================================*/
 
@@ -574,38 +472,6 @@ static msg_t MotorsThread(void *arg) {
 }
 
 
-static WORKING_AREA(waIMUThread, 256);
-static msg_t IMUThread(void *arg) {
-  chRegSetThreadName("IMU");
-  (void)arg;
-
-  while (TRUE) {
-	  
-	  spiAcquireBus(&SPID2);                        /* Acquire ownership of the bus.    */
-	  spiStart(&SPID2, &ls_spicfg);                 /* Setup transfer parameters.       */
-	  chMtxLock(&mtx_imu);
-	  //spiReceive(&SPID2,5,rxbuf_16bit);       	/* Atomic transfer operations.      */
-	  //spi_lld_polled_exchange(&SPID2,spi_frame);
-	  //chMtxUnlock();
-	  spiExchange(&SPID2,10,txbuf_16bit,rxbuf_16bit);
-
-
-	  if(rxbuf_16bit[0] != 0) palClearPad(IOPORT3,11);
-	  else palSetPad(IOPORT3,11);
-	  spiReleaseBus(&SPID2);                        /* Ownership release.               */
-	  palSetPad(IOPORT3,11);
-	
-	 	Roll = (int16_t) rxbuf_16bit[0];
-	  	Pitch = (int16_t) rxbuf_16bit[3];
-//	  	Yaw = (int16_t) rxbuf_16bit[3];
-	  //else chThdSleepMilliseconds(1);
-
-	  chMtxUnlock();
-	  chThdSleepMilliseconds(10);
-  }
-  return 0;
-}
-
 
 
 static WORKING_AREA(waRCThread, 256);
@@ -648,15 +514,19 @@ static msg_t RCThread(void *arg) {
  * Application entry point.
  */
 int main(void) {
-  Thread *shelltp = NULL;
 
-  /*
+   /*
    * System initializations.
    * - HAL initialization, this also initializes the configured device drivers
    *   and performs the board-specific initializations.
    * - Kernel initialization, the main() function becomes a thread and the
    *   RTOS is active.
    */
+
+  uint32_t tempR, tempP, tempY;
+  float Roll,Pitch,Yaw;  
+
+
   halInit();
   chSysInit();
   i2c_setup();
@@ -686,39 +556,68 @@ int main(void) {
   icuStart(&ICUD1, &icucfg);
   icuEnable(&ICUD1);
   
-
-  /*
-   * Shell manager initialization.
-   */
-  shellInit();
-
-  /*
-   * Creates the blinker thread.
-   */
-  
   chThdSleepSeconds(1);
   
   chThdCreateStatic(waThread1, sizeof(waThread1), HIGHPRIO, Thread1, NULL);
 
   chThdCreateStatic(waMotorsThread, sizeof(waMotorsThread), NORMALPRIO, MotorsThread, NULL);
 
-//  chThdCreateStatic(waRCThread, sizeof(waRCThread), NORMALPRIO, RCThread, NULL);
+ 
+  spiAcquireBus(&SPID2);                        /* Acquire ownership of the bus.    */
+  spiStart(&SPID2, &ls_spicfg);                 /* Setup transfer parameters.       */
+  spiSelect(&SPID2);
 
-  chThdCreateStatic(waIMUThread, sizeof(waIMUThread), NORMALPRIO, IMUThread, NULL);
-
-  /*
-   * Normal main() thread activity, in this demo it does nothing except
-   * sleeping in a loop and check the button state.
-   */
-   // CONTROL LAW HERE!!!
-   
+ 
   while (TRUE) {
-    if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE))
-      shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
-    else if (chThdTerminated(shelltp)) {
-      chThdRelease(shelltp);    /* Recovers memory of the previous shell.   */
-      shelltp = NULL;           /* Triggers spawning of a new shell.        */
-    }
-    chThdSleepMilliseconds(1000);
+
+	while(!(SPID2.spi->SR & SPI_SR_RXNE)); 
+	 	
+  		spiReceive(&SPID2,24,rxbuf_16bit);
+
+//	Floating point calculation of Roll/Pitch/Yaw inside the microcontroller. Decomment next 6 lines if you want to implement
+//	the control Law.
+
+//	tempR = (uint32_t)((rxbuf_16bit[0] << 31) | (rxbuf_16bit[1] << 23) | (rxbuf_16bit[2] << 11) | rxbuf_16bit[3]);
+//	tempP = (uint32_t)((rxbuf_16bit[4] << 31) | (rxbuf_16bit[5] << 23) | (rxbuf_16bit[6] << 11) | rxbuf_16bit[7]);
+//	tempY = (uint32_t)((rxbuf_16bit[8] << 31) | (rxbuf_16bit[9] << 23) | (rxbuf_16bit[10] << 11) | rxbuf_16bit[11]);
+		
+//	Roll = (*(float*)&tempR);
+//	Pitch = (*(float*)&tempP); 					
+//	Yaw = (*(float*)&tempY);
+	
+	// CONTROL LAW HERE
+	//++ (ROLL,PITCH,YAW ERRORS) -----> [CONTROLLER] -----> (MOTORS INPUT)
+
+	palSetPad(IOPORT3,11);
+
+
+/*	SPI FLOATING POINT TEST PACKET (sending 5.6F)	
+	rxbuf_16bit[0] = 0;
+	rxbuf_16bit[1] = 129;
+	rxbuf_16bit[2] = 1638;
+	rxbuf_16bit[3] = 819;
+	rxbuf_16bit[4] = 0;
+	rxbuf_16bit[5] = 129;
+	rxbuf_16bit[6] = 1638;
+	rxbuf_16bit[7] = 819;
+	rxbuf_16bit[8] = 1;
+	rxbuf_16bit[9] = 129;
+	rxbuf_16bit[10] = 1638;
+	rxbuf_16bit[11] = 819;
+*/	
+
+
+
+	if(SDU1.config->usbp->state==USB_ACTIVE)
+	{
+		chprintf((BaseChannel *)&SDU1,"S:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:E\r\n",rxbuf_16bit[0],rxbuf_16bit[1],rxbuf_16bit[2],rxbuf_16bit[3],rxbuf_16bit[4],rxbuf_16bit[5],rxbuf_16bit[6],rxbuf_16bit[7],rxbuf_16bit[8],rxbuf_16bit[9],rxbuf_16bit[10],rxbuf_16bit[11]);
+
+	}
+
+    	chThdSleepMilliseconds(10);
   }
+  spiUnselect(&SPID2);
+  spiReleaseBus(&SPID2);                        /* Ownership release.               */
+
+
 }
