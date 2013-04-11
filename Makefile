@@ -55,7 +55,7 @@ endif
 
 
 # Define proect name here
-PROJECT = fc6
+PROJECT = freecopter-control
 
 # Imported source files and paths
 CHIBIOS = /home/formica/chibios/chibios
