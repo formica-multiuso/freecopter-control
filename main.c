@@ -61,6 +61,8 @@
 #define MOTOR3_ADDR 0x2b
 #define MOTOR4_ADDR 0x2c
 
+//#define GRAUPNER_MX16_HOTT
+#define GRAUPNER_MX16_35MHZ
 
 /*===========================================================================*/
 /* GLOBAL VARIABLES                                                          */
@@ -390,8 +392,7 @@ static const SPIConfig ls_spicfg = {
 /* ICU STUFF								     */
 /*===========================================================================*/
 
-
-int zero = 0;
+#ifdef GRAUPNER_MX16_HOTT
 
 static void icuwidthcb(ICUDriver *icup) {
   palSetPad(IOPORT3,10);
@@ -430,6 +431,55 @@ static ICUConfig icucfg = {
 };
 
 int icutemp[8];
+
+#endif
+
+#ifdef GRAUPNER_MX16_35MHZ
+
+int radio_count = 0;
+
+static void icuwidthcb(ICUDriver *icup) {
+  palSetPad(IOPORT3,10);
+  last_width = icuGetWidthI(icup);
+  icu_ch[radio_count] = last_width;
+  radio_count += 1;
+  if(radio_count == 4) radio_count=0;  
+}
+
+static void icuperiodcb(ICUDriver *icup) {
+  
+  palSetPad(IOPORT3,10);
+  last_period = icuGetPeriodI(icup);
+  if(last_period > 5000) frame_flag = 1;
+  if((frame_flag > 1) && (frame_flag <= 9))
+  {
+	icu_ch[frame_flag++ - 1] = (char) last_period;
+		
+  }
+ 
+  if(frame_flag == 9) frame_flag=0; 
+
+}
+
+static ICUConfig icucfg = {
+  ICU_INPUT_ACTIVE_LOW,
+  1000000,                                    /* 1MHz ICU clock frequency.   */
+  icuwidthcb,
+  NULL
+  //icuperiodcb
+};
+
+int icutemp[8];
+
+#endif
+
+
+
+
+
+
+
+
 
 /*===========================================================================*/
 /* Generic code.                                                             */
@@ -610,7 +660,8 @@ int main(void) {
 
 	if(SDU1.config->usbp->state==USB_ACTIVE)
 	{
-		chprintf((BaseChannel *)&SDU1,"S:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:E\r\n",rxbuf_16bit[0],rxbuf_16bit[1],rxbuf_16bit[2],rxbuf_16bit[3],rxbuf_16bit[4],rxbuf_16bit[5],rxbuf_16bit[6],rxbuf_16bit[7],rxbuf_16bit[8],rxbuf_16bit[9],rxbuf_16bit[10],rxbuf_16bit[11]);
+//		chprintf((BaseChannel *)&SDU1,"S:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:E\r\n",rxbuf_16bit[0],rxbuf_16bit[1],rxbuf_16bit[2],rxbuf_16bit[3],rxbuf_16bit[4],rxbuf_16bit[5],rxbuf_16bit[6],rxbuf_16bit[7],rxbuf_16bit[8],rxbuf_16bit[9],rxbuf_16bit[10],rxbuf_16bit[11]);
+		chprintf((BaseChannel *)&SDU1, "S:%d:%d:%d:%d:%d:%d:%d:%d:E\r\n",icu_ch[0],icu_ch[1],icu_ch[2],icu_ch[3],icu_ch[4],icu_ch[5],icu_ch[6],icu_ch[7]);
 
 	}
 
