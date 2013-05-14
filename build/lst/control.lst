@@ -1,0 +1,1138 @@
+ARM GAS  /tmp/ccKJNRP3.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 2
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"control.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.global	__aeabi_fsub
+  19              		.global	__aeabi_f2d
+  20              		.global	__aeabi_dmul
+  21              		.global	__aeabi_dadd
+  22              		.global	__aeabi_d2f
+  23              		.global	__aeabi_f2iz
+  24              		.section	.text.pid_controller,"ax",%progbits
+  25              		.align	2
+  26              		.p2align 4,,15
+  27              		.global	pid_controller
+  28              		.thumb
+  29              		.thumb_func
+  30              		.type	pid_controller, %function
+  31              	pid_controller:
+  32              	.LFB7:
+  33              		.file 1 "control.c"
+  34              		.loc 1 66 0
+  35              		.cfi_startproc
+  36              		@ args = 0, pretend = 0, frame = 0
+  37              		@ frame_needed = 0, uses_anonymous_args = 0
+  38 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+  39              	.LCFI0:
+  40              		.cfi_def_cfa_offset 32
+  41              		.cfi_offset 3, -32
+  42              		.cfi_offset 4, -28
+  43              		.cfi_offset 5, -24
+  44              		.cfi_offset 6, -20
+  45              		.cfi_offset 7, -16
+  46              		.cfi_offset 8, -12
+  47              		.cfi_offset 9, -8
+  48              		.cfi_offset 14, -4
+  49              		.loc 1 78 0
+  50 0004 40F20001 		movw	r1, #:lower16:Roll
+  51              		.loc 1 70 0
+  52 0008 40F20005 		movw	r5, #:lower16:.LANCHOR0
+  53              		.loc 1 71 0
+  54 000c 40F20004 		movw	r4, #:lower16:.LANCHOR1
+  55              		.loc 1 72 0
+  56 0010 40F20003 		movw	r3, #:lower16:.LANCHOR2
+  57              		.loc 1 70 0
+ARM GAS  /tmp/ccKJNRP3.s 			page 2
+
+
+  58 0014 0A22     		movs	r2, #10
+  59              		.loc 1 72 0
+  60 0016 C0F20003 		movt	r3, #:upper16:.LANCHOR2
+  61              		.loc 1 70 0
+  62 001a C0F20005 		movt	r5, #:upper16:.LANCHOR0
+  63              		.loc 1 71 0
+  64 001e C0F20004 		movt	r4, #:upper16:.LANCHOR1
+  65              		.loc 1 78 0
+  66 0022 C0F20001 		movt	r1, #:upper16:Roll
+  67              		.loc 1 70 0
+  68 0026 2A70     		strb	r2, [r5, #0]
+  69              		.loc 1 71 0
+  70 0028 2270     		strb	r2, [r4, #0]
+  71              		.loc 1 72 0
+  72 002a 1A70     		strb	r2, [r3, #0]
+  73              		.loc 1 78 0
+  74 002c 0968     		ldr	r1, [r1, #0]	@ float
+  75 002e 0020     		movs	r0, #0
+  76 0030 FFF7FEFF 		bl	__aeabi_fsub
+  77              	.LVL0:
+  78 0034 0746     		mov	r7, r0
+  79              	.LVL1:
+  80              		.loc 1 79 0
+  81 0036 40F20000 		movw	r0, #:lower16:Pitch
+  82              	.LVL2:
+  83 003a C0F20000 		movt	r0, #:upper16:Pitch
+  84 003e 0168     		ldr	r1, [r0, #0]	@ float
+  85 0040 0020     		movs	r0, #0
+  86 0042 FFF7FEFF 		bl	__aeabi_fsub
+  87              	.LVL3:
+  88              		.loc 1 82 0
+  89 0046 40F20009 		movw	r9, #:lower16:.LANCHOR3
+  90 004a C0F20009 		movt	r9, #:upper16:.LANCHOR3
+  91              		.loc 1 79 0
+  92 004e 0646     		mov	r6, r0
+  93              	.LVL4:
+  94              		.loc 1 82 0
+  95 0050 D9F80000 		ldr	r0, [r9, #0]	@ float
+  96              	.LVL5:
+  97 0054 FFF7FEFF 		bl	__aeabi_f2d
+  98              	.LVL6:
+  99 0058 0446     		mov	r4, r0
+ 100 005a 3846     		mov	r0, r7
+ 101 005c 0D46     		mov	r5, r1
+ 102 005e FFF7FEFF 		bl	__aeabi_f2d
+ 103              	.LVL7:
+ 104 0062 23A3     		adr	r3, .L2
+ 105 0064 D3E90023 		ldrd	r2, [r3]
+ 106 0068 FFF7FEFF 		bl	__aeabi_dmul
+ 107              	.LVL8:
+ 108 006c 0246     		mov	r2, r0
+ 109 006e 0B46     		mov	r3, r1
+ 110 0070 2046     		mov	r0, r4
+ 111 0072 2946     		mov	r1, r5
+ 112 0074 FFF7FEFF 		bl	__aeabi_dadd
+ 113              	.LVL9:
+ 114 0078 FFF7FEFF 		bl	__aeabi_d2f
+ARM GAS  /tmp/ccKJNRP3.s 			page 3
+
+
+ 115              	.LVL10:
+ 116              		.loc 1 83 0
+ 117 007c 40F20008 		movw	r8, #:lower16:.LANCHOR4
+ 118 0080 C0F20008 		movt	r8, #:upper16:.LANCHOR4
+ 119              		.loc 1 82 0
+ 120 0084 C9F80000 		str	r0, [r9, #0]	@ float
+ 121              		.loc 1 83 0
+ 122 0088 D8F80000 		ldr	r0, [r8, #0]	@ float
+ 123 008c FFF7FEFF 		bl	__aeabi_f2d
+ 124              	.LVL11:
+ 125 0090 0446     		mov	r4, r0
+ 126 0092 3046     		mov	r0, r6
+ 127 0094 0D46     		mov	r5, r1
+ 128 0096 FFF7FEFF 		bl	__aeabi_f2d
+ 129              	.LVL12:
+ 130 009a 15A3     		adr	r3, .L2
+ 131 009c D3E90023 		ldrd	r2, [r3]
+ 132 00a0 FFF7FEFF 		bl	__aeabi_dmul
+ 133              	.LVL13:
+ 134 00a4 0246     		mov	r2, r0
+ 135 00a6 0B46     		mov	r3, r1
+ 136 00a8 2046     		mov	r0, r4
+ 137 00aa 2946     		mov	r1, r5
+ 138 00ac FFF7FEFF 		bl	__aeabi_dadd
+ 139              	.LVL14:
+ 140 00b0 FFF7FEFF 		bl	__aeabi_d2f
+ 141              	.LVL15:
+ 142 00b4 C8F80000 		str	r0, [r8, #0]	@ float
+ 143              	.LVL16:
+ 144              		.loc 1 91 0
+ 145 00b8 3846     		mov	r0, r7
+ 146 00ba FFF7FEFF 		bl	__aeabi_f2iz
+ 147              	.LVL17:
+ 148 00be 40F20001 		movw	r1, #:lower16:.LANCHOR5
+ 149 00c2 C0F20001 		movt	r1, #:upper16:.LANCHOR5
+ 150 00c6 0870     		strb	r0, [r1, #0]
+ 151              		.loc 1 92 0
+ 152 00c8 3046     		mov	r0, r6
+ 153 00ca FFF7FEFF 		bl	__aeabi_f2iz
+ 154              	.LVL18:
+ 155 00ce 40F20001 		movw	r1, #:lower16:.LANCHOR6
+ 156              		.loc 1 95 0
+ 157 00d2 40F20002 		movw	r2, #:lower16:.LANCHOR7
+ 158              		.loc 1 96 0
+ 159 00d6 40F20003 		movw	r3, #:lower16:.LANCHOR8
+ 160              		.loc 1 92 0
+ 161 00da C0F20001 		movt	r1, #:upper16:.LANCHOR6
+ 162              		.loc 1 95 0
+ 163 00de C0F20002 		movt	r2, #:upper16:.LANCHOR7
+ 164              		.loc 1 96 0
+ 165 00e2 C0F20003 		movt	r3, #:upper16:.LANCHOR8
+ 166              		.loc 1 92 0
+ 167 00e6 0870     		strb	r0, [r1, #0]
+ 168              		.loc 1 95 0
+ 169 00e8 1760     		str	r7, [r2, #0]	@ float
+ 170              		.loc 1 96 0
+ 171 00ea 1E60     		str	r6, [r3, #0]	@ float
+ARM GAS  /tmp/ccKJNRP3.s 			page 4
+
+
+ 172 00ec BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 173              	.L3:
+ 174              		.align	3
+ 175              	.L2:
+ 176 00f0 7B14AE47 		.word	1202590843
+ 177 00f4 E17A843F 		.word	1065646817
+ 178              		.cfi_endproc
+ 179              	.LFE7:
+ 180              		.size	pid_controller, .-pid_controller
+ 181              		.global	KD
+ 182              		.global	KI
+ 183              		.global	KP
+ 184              		.global	last_time
+ 185              		.global	yaw_I
+ 186              		.global	pitch_I
+ 187              		.global	roll_I
+ 188              		.global	yaw_prev_error
+ 189              		.global	pitch_prev_error
+ 190              		.global	roll_prev_error
+ 191              		.global	yaw_controller_output
+ 192              		.global	pitch_controller_output
+ 193              		.global	roll_controller_output
+ 194 00f8 AFF30080 		.section	.bss.last_time,"aw",%nobits
+ 194      AFF30080 
+ 195              		.align	2
+ 196              		.type	last_time, %object
+ 197              		.size	last_time, 4
+ 198              	last_time:
+ 199 0000 00000000 		.space	4
+ 200              		.section	.bss.yaw_I,"aw",%nobits
+ 201              		.align	2
+ 202              		.type	yaw_I, %object
+ 203              		.size	yaw_I, 4
+ 204              	yaw_I:
+ 205 0000 00000000 		.space	4
+ 206              		.section	.bss.yaw_controller_output,"aw",%nobits
+ 207              		.type	yaw_controller_output, %object
+ 208              		.size	yaw_controller_output, 1
+ 209              	yaw_controller_output:
+ 210 0000 00       		.space	1
+ 211              		.section	.bss.KD,"aw",%nobits
+ 212              		.set	.LANCHOR2,. + 0
+ 213              		.type	KD, %object
+ 214              		.size	KD, 1
+ 215              	KD:
+ 216 0000 00       		.space	1
+ 217              		.section	.bss.yaw_prev_error,"aw",%nobits
+ 218              		.align	2
+ 219              		.type	yaw_prev_error, %object
+ 220              		.size	yaw_prev_error, 4
+ 221              	yaw_prev_error:
+ 222 0000 00000000 		.space	4
+ 223              		.section	.bss.pitch_prev_error,"aw",%nobits
+ 224              		.align	2
+ 225              		.set	.LANCHOR8,. + 0
+ 226              		.type	pitch_prev_error, %object
+ 227              		.size	pitch_prev_error, 4
+ARM GAS  /tmp/ccKJNRP3.s 			page 5
+
+
+ 228              	pitch_prev_error:
+ 229 0000 00000000 		.space	4
+ 230              		.section	.bss.KI,"aw",%nobits
+ 231              		.set	.LANCHOR1,. + 0
+ 232              		.type	KI, %object
+ 233              		.size	KI, 1
+ 234              	KI:
+ 235 0000 00       		.space	1
+ 236              		.section	.bss.roll_I,"aw",%nobits
+ 237              		.align	2
+ 238              		.set	.LANCHOR3,. + 0
+ 239              		.type	roll_I, %object
+ 240              		.size	roll_I, 4
+ 241              	roll_I:
+ 242 0000 00000000 		.space	4
+ 243              		.section	.bss.KP,"aw",%nobits
+ 244              		.set	.LANCHOR0,. + 0
+ 245              		.type	KP, %object
+ 246              		.size	KP, 1
+ 247              	KP:
+ 248 0000 00       		.space	1
+ 249              		.section	.bss.roll_controller_output,"aw",%nobits
+ 250              		.set	.LANCHOR5,. + 0
+ 251              		.type	roll_controller_output, %object
+ 252              		.size	roll_controller_output, 1
+ 253              	roll_controller_output:
+ 254 0000 00       		.space	1
+ 255              		.section	.bss.roll_prev_error,"aw",%nobits
+ 256              		.align	2
+ 257              		.set	.LANCHOR7,. + 0
+ 258              		.type	roll_prev_error, %object
+ 259              		.size	roll_prev_error, 4
+ 260              	roll_prev_error:
+ 261 0000 00000000 		.space	4
+ 262              		.section	.bss.pitch_controller_output,"aw",%nobits
+ 263              		.set	.LANCHOR6,. + 0
+ 264              		.type	pitch_controller_output, %object
+ 265              		.size	pitch_controller_output, 1
+ 266              	pitch_controller_output:
+ 267 0000 00       		.space	1
+ 268              		.section	.bss.pitch_I,"aw",%nobits
+ 269              		.align	2
+ 270              		.set	.LANCHOR4,. + 0
+ 271              		.type	pitch_I, %object
+ 272              		.size	pitch_I, 4
+ 273              	pitch_I:
+ 274 0000 00000000 		.space	4
+ 275              		.text
+ 276              	.Letext0:
+ 277              		.file 2 "/home/formica/toolchains/gcc-arm-none-eabi-4_7-2012q4/bin/../lib/gcc/arm-none-eabi/4.7.3/
+ 278              		.section	.debug_info,"",%progbits
+ 279              	.Ldebug_info0:
+ 280 0000 2E020000 		.4byte	0x22e
+ 281 0004 0200     		.2byte	0x2
+ 282 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 283 000a 04       		.byte	0x4
+ 284 000b 01       		.uleb128 0x1
+ARM GAS  /tmp/ccKJNRP3.s 			page 6
+
+
+ 285 000c 94000000 		.4byte	.LASF33
+ 286 0010 01       		.byte	0x1
+ 287 0011 55000000 		.4byte	.LASF34
+ 288 0015 76010000 		.4byte	.LASF35
+ 289 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 290 001d 00000000 		.4byte	0
+ 291 0021 00000000 		.4byte	0
+ 292 0025 00000000 		.4byte	.Ldebug_line0
+ 293 0029 02       		.uleb128 0x2
+ 294 002a 04       		.byte	0x4
+ 295 002b 04       		.byte	0x4
+ 296 002c 39000000 		.4byte	.LASF0
+ 297 0030 02       		.uleb128 0x2
+ 298 0031 08       		.byte	0x8
+ 299 0032 04       		.byte	0x4
+ 300 0033 15000000 		.4byte	.LASF1
+ 301 0037 02       		.uleb128 0x2
+ 302 0038 04       		.byte	0x4
+ 303 0039 07       		.byte	0x7
+ 304 003a 15010000 		.4byte	.LASF2
+ 305 003e 02       		.uleb128 0x2
+ 306 003f 01       		.byte	0x1
+ 307 0040 06       		.byte	0x6
+ 308 0041 BD010000 		.4byte	.LASF3
+ 309 0045 02       		.uleb128 0x2
+ 310 0046 01       		.byte	0x1
+ 311 0047 08       		.byte	0x8
+ 312 0048 47000000 		.4byte	.LASF4
+ 313 004c 02       		.uleb128 0x2
+ 314 004d 02       		.byte	0x2
+ 315 004e 05       		.byte	0x5
+ 316 004f A4010000 		.4byte	.LASF5
+ 317 0053 02       		.uleb128 0x2
+ 318 0054 02       		.byte	0x2
+ 319 0055 07       		.byte	0x7
+ 320 0056 5F000000 		.4byte	.LASF6
+ 321 005a 03       		.uleb128 0x3
+ 322 005b 04       		.byte	0x4
+ 323 005c 05       		.byte	0x5
+ 324 005d 696E7400 		.ascii	"int\000"
+ 325 0061 02       		.uleb128 0x2
+ 326 0062 08       		.byte	0x8
+ 327 0063 05       		.byte	0x5
+ 328 0064 63010000 		.4byte	.LASF7
+ 329 0068 02       		.uleb128 0x2
+ 330 0069 08       		.byte	0x8
+ 331 006a 07       		.byte	0x7
+ 332 006b 31010000 		.4byte	.LASF8
+ 333 006f 02       		.uleb128 0x2
+ 334 0070 04       		.byte	0x4
+ 335 0071 05       		.byte	0x5
+ 336 0072 B4010000 		.4byte	.LASF9
+ 337 0076 02       		.uleb128 0x2
+ 338 0077 04       		.byte	0x4
+ 339 0078 07       		.byte	0x7
+ 340 0079 5A010000 		.4byte	.LASF10
+ 341 007d 02       		.uleb128 0x2
+ARM GAS  /tmp/ccKJNRP3.s 			page 7
+
+
+ 342 007e 04       		.byte	0x4
+ 343 007f 07       		.byte	0x7
+ 344 0080 DD000000 		.4byte	.LASF11
+ 345 0084 02       		.uleb128 0x2
+ 346 0085 01       		.byte	0x1
+ 347 0086 08       		.byte	0x8
+ 348 0087 71010000 		.4byte	.LASF12
+ 349 008b 04       		.uleb128 0x4
+ 350 008c 23000000 		.4byte	.LASF13
+ 351 0090 02       		.byte	0x2
+ 352 0091 29       		.byte	0x29
+ 353 0092 3E000000 		.4byte	0x3e
+ 354 0096 04       		.uleb128 0x4
+ 355 0097 52010000 		.4byte	.LASF14
+ 356 009b 02       		.byte	0x2
+ 357 009c 4F       		.byte	0x4f
+ 358 009d 6F000000 		.4byte	0x6f
+ 359 00a1 05       		.uleb128 0x5
+ 360 00a2 01       		.byte	0x1
+ 361 00a3 22010000 		.4byte	.LASF36
+ 362 00a7 01       		.byte	0x1
+ 363 00a8 41       		.byte	0x41
+ 364 00a9 01       		.byte	0x1
+ 365 00aa 00000000 		.4byte	.LFB7
+ 366 00ae F8000000 		.4byte	.LFE7
+ 367 00b2 00000000 		.4byte	.LLST0
+ 368 00b6 01       		.byte	0x1
+ 369 00b7 23010000 		.4byte	0x123
+ 370 00bb 06       		.uleb128 0x6
+ 371 00bc 1C000000 		.4byte	.LASF15
+ 372 00c0 01       		.byte	0x1
+ 373 00c1 43       		.byte	0x43
+ 374 00c2 29000000 		.4byte	0x29
+ 375 00c6 20000000 		.4byte	.LLST1
+ 376 00ca 06       		.uleb128 0x6
+ 377 00cb 2A000000 		.4byte	.LASF16
+ 378 00cf 01       		.byte	0x1
+ 379 00d0 43       		.byte	0x43
+ 380 00d1 29000000 		.4byte	0x29
+ 381 00d5 4F000000 		.4byte	.LLST2
+ 382 00d9 07       		.uleb128 0x7
+ 383 00da 9E010000 		.4byte	.LASF17
+ 384 00de 01       		.byte	0x1
+ 385 00df 43       		.byte	0x43
+ 386 00e0 29000000 		.4byte	0x29
+ 387 00e4 08       		.uleb128 0x8
+ 388 00e5 647400   		.ascii	"dt\000"
+ 389 00e8 01       		.byte	0x1
+ 390 00e9 43       		.byte	0x43
+ 391 00ea 29000000 		.4byte	0x29
+ 392 00ee 06       		.uleb128 0x6
+ 393 00ef 0A010000 		.4byte	.LASF18
+ 394 00f3 01       		.byte	0x1
+ 395 00f4 44       		.byte	0x44
+ 396 00f5 29000000 		.4byte	0x29
+ 397 00f9 7E000000 		.4byte	.LLST3
+ 398 00fd 06       		.uleb128 0x6
+ARM GAS  /tmp/ccKJNRP3.s 			page 8
+
+
+ 399 00fe 88000000 		.4byte	.LASF19
+ 400 0102 01       		.byte	0x1
+ 401 0103 44       		.byte	0x44
+ 402 0104 29000000 		.4byte	0x29
+ 403 0108 9C000000 		.4byte	.LLST4
+ 404 010c 07       		.uleb128 0x7
+ 405 010d 48010000 		.4byte	.LASF20
+ 406 0111 01       		.byte	0x1
+ 407 0112 44       		.byte	0x44
+ 408 0113 29000000 		.4byte	0x29
+ 409 0117 08       		.uleb128 0x8
+ 410 0118 6E6F7700 		.ascii	"now\000"
+ 411 011c 01       		.byte	0x1
+ 412 011d 45       		.byte	0x45
+ 413 011e 96000000 		.4byte	0x96
+ 414 0122 00       		.byte	0
+ 415 0123 09       		.uleb128 0x9
+ 416 0124 10000000 		.4byte	.LASF21
+ 417 0128 01       		.byte	0x1
+ 418 0129 31       		.byte	0x31
+ 419 012a 29000000 		.4byte	0x29
+ 420 012e 01       		.byte	0x1
+ 421 012f 01       		.byte	0x1
+ 422 0130 09       		.uleb128 0x9
+ 423 0131 E1010000 		.4byte	.LASF22
+ 424 0135 01       		.byte	0x1
+ 425 0136 31       		.byte	0x31
+ 426 0137 29000000 		.4byte	0x29
+ 427 013b 01       		.byte	0x1
+ 428 013c 01       		.byte	0x1
+ 429 013d 0A       		.uleb128 0xa
+ 430 013e 59617700 		.ascii	"Yaw\000"
+ 431 0142 01       		.byte	0x1
+ 432 0143 31       		.byte	0x31
+ 433 0144 29000000 		.4byte	0x29
+ 434 0148 01       		.byte	0x1
+ 435 0149 01       		.byte	0x1
+ 436 014a 0B       		.uleb128 0xb
+ 437 014b F6010000 		.4byte	.LASF23
+ 438 014f 01       		.byte	0x1
+ 439 0150 35       		.byte	0x35
+ 440 0151 8B000000 		.4byte	0x8b
+ 441 0155 01       		.byte	0x1
+ 442 0156 05       		.byte	0x5
+ 443 0157 03       		.byte	0x3
+ 444 0158 00000000 		.4byte	roll_controller_output
+ 445 015c 0B       		.uleb128 0xb
+ 446 015d C9010000 		.4byte	.LASF24
+ 447 0161 01       		.byte	0x1
+ 448 0162 35       		.byte	0x35
+ 449 0163 8B000000 		.4byte	0x8b
+ 450 0167 01       		.byte	0x1
+ 451 0168 05       		.byte	0x5
+ 452 0169 03       		.byte	0x3
+ 453 016a 00000000 		.4byte	pitch_controller_output
+ 454 016e 0B       		.uleb128 0xb
+ 455 016f 72000000 		.4byte	.LASF25
+ARM GAS  /tmp/ccKJNRP3.s 			page 9
+
+
+ 456 0173 01       		.byte	0x1
+ 457 0174 35       		.byte	0x35
+ 458 0175 8B000000 		.4byte	0x8b
+ 459 0179 01       		.byte	0x1
+ 460 017a 05       		.byte	0x5
+ 461 017b 03       		.byte	0x3
+ 462 017c 00000000 		.4byte	yaw_controller_output
+ 463 0180 0B       		.uleb128 0xb
+ 464 0181 00000000 		.4byte	.LASF26
+ 465 0185 01       		.byte	0x1
+ 466 0186 37       		.byte	0x37
+ 467 0187 29000000 		.4byte	0x29
+ 468 018b 01       		.byte	0x1
+ 469 018c 05       		.byte	0x5
+ 470 018d 03       		.byte	0x3
+ 471 018e 00000000 		.4byte	roll_prev_error
+ 472 0192 0B       		.uleb128 0xb
+ 473 0193 F9000000 		.4byte	.LASF27
+ 474 0197 01       		.byte	0x1
+ 475 0198 37       		.byte	0x37
+ 476 0199 29000000 		.4byte	0x29
+ 477 019d 01       		.byte	0x1
+ 478 019e 05       		.byte	0x5
+ 479 019f 03       		.byte	0x3
+ 480 01a0 00000000 		.4byte	pitch_prev_error
+ 481 01a4 0B       		.uleb128 0xb
+ 482 01a5 E7010000 		.4byte	.LASF28
+ 483 01a9 01       		.byte	0x1
+ 484 01aa 37       		.byte	0x37
+ 485 01ab 29000000 		.4byte	0x29
+ 486 01af 01       		.byte	0x1
+ 487 01b0 05       		.byte	0x5
+ 488 01b1 03       		.byte	0x3
+ 489 01b2 00000000 		.4byte	yaw_prev_error
+ 490 01b6 0B       		.uleb128 0xb
+ 491 01b7 32000000 		.4byte	.LASF29
+ 492 01bb 01       		.byte	0x1
+ 493 01bc 38       		.byte	0x38
+ 494 01bd 29000000 		.4byte	0x29
+ 495 01c1 01       		.byte	0x1
+ 496 01c2 05       		.byte	0x5
+ 497 01c3 03       		.byte	0x3
+ 498 01c4 00000000 		.4byte	roll_I
+ 499 01c8 0B       		.uleb128 0xb
+ 500 01c9 3F000000 		.4byte	.LASF30
+ 501 01cd 01       		.byte	0x1
+ 502 01ce 38       		.byte	0x38
+ 503 01cf 29000000 		.4byte	0x29
+ 504 01d3 01       		.byte	0x1
+ 505 01d4 05       		.byte	0x5
+ 506 01d5 03       		.byte	0x3
+ 507 01d6 00000000 		.4byte	pitch_I
+ 508 01da 0B       		.uleb128 0xb
+ 509 01db AE010000 		.4byte	.LASF31
+ 510 01df 01       		.byte	0x1
+ 511 01e0 38       		.byte	0x38
+ 512 01e1 29000000 		.4byte	0x29
+ARM GAS  /tmp/ccKJNRP3.s 			page 10
+
+
+ 513 01e5 01       		.byte	0x1
+ 514 01e6 05       		.byte	0x5
+ 515 01e7 03       		.byte	0x3
+ 516 01e8 00000000 		.4byte	yaw_I
+ 517 01ec 0B       		.uleb128 0xb
+ 518 01ed EF000000 		.4byte	.LASF32
+ 519 01f1 01       		.byte	0x1
+ 520 01f2 3A       		.byte	0x3a
+ 521 01f3 96000000 		.4byte	0x96
+ 522 01f7 01       		.byte	0x1
+ 523 01f8 05       		.byte	0x5
+ 524 01f9 03       		.byte	0x3
+ 525 01fa 00000000 		.4byte	last_time
+ 526 01fe 0C       		.uleb128 0xc
+ 527 01ff 4B5000   		.ascii	"KP\000"
+ 528 0202 01       		.byte	0x1
+ 529 0203 3F       		.byte	0x3f
+ 530 0204 8B000000 		.4byte	0x8b
+ 531 0208 01       		.byte	0x1
+ 532 0209 05       		.byte	0x5
+ 533 020a 03       		.byte	0x3
+ 534 020b 00000000 		.4byte	KP
+ 535 020f 0C       		.uleb128 0xc
+ 536 0210 4B4900   		.ascii	"KI\000"
+ 537 0213 01       		.byte	0x1
+ 538 0214 3F       		.byte	0x3f
+ 539 0215 8B000000 		.4byte	0x8b
+ 540 0219 01       		.byte	0x1
+ 541 021a 05       		.byte	0x5
+ 542 021b 03       		.byte	0x3
+ 543 021c 00000000 		.4byte	KI
+ 544 0220 0C       		.uleb128 0xc
+ 545 0221 4B4400   		.ascii	"KD\000"
+ 546 0224 01       		.byte	0x1
+ 547 0225 3F       		.byte	0x3f
+ 548 0226 8B000000 		.4byte	0x8b
+ 549 022a 01       		.byte	0x1
+ 550 022b 05       		.byte	0x5
+ 551 022c 03       		.byte	0x3
+ 552 022d 00000000 		.4byte	KD
+ 553 0231 00       		.byte	0
+ 554              		.section	.debug_abbrev,"",%progbits
+ 555              	.Ldebug_abbrev0:
+ 556 0000 01       		.uleb128 0x1
+ 557 0001 11       		.uleb128 0x11
+ 558 0002 01       		.byte	0x1
+ 559 0003 25       		.uleb128 0x25
+ 560 0004 0E       		.uleb128 0xe
+ 561 0005 13       		.uleb128 0x13
+ 562 0006 0B       		.uleb128 0xb
+ 563 0007 03       		.uleb128 0x3
+ 564 0008 0E       		.uleb128 0xe
+ 565 0009 1B       		.uleb128 0x1b
+ 566 000a 0E       		.uleb128 0xe
+ 567 000b 55       		.uleb128 0x55
+ 568 000c 06       		.uleb128 0x6
+ 569 000d 11       		.uleb128 0x11
+ARM GAS  /tmp/ccKJNRP3.s 			page 11
+
+
+ 570 000e 01       		.uleb128 0x1
+ 571 000f 52       		.uleb128 0x52
+ 572 0010 01       		.uleb128 0x1
+ 573 0011 10       		.uleb128 0x10
+ 574 0012 06       		.uleb128 0x6
+ 575 0013 00       		.byte	0
+ 576 0014 00       		.byte	0
+ 577 0015 02       		.uleb128 0x2
+ 578 0016 24       		.uleb128 0x24
+ 579 0017 00       		.byte	0
+ 580 0018 0B       		.uleb128 0xb
+ 581 0019 0B       		.uleb128 0xb
+ 582 001a 3E       		.uleb128 0x3e
+ 583 001b 0B       		.uleb128 0xb
+ 584 001c 03       		.uleb128 0x3
+ 585 001d 0E       		.uleb128 0xe
+ 586 001e 00       		.byte	0
+ 587 001f 00       		.byte	0
+ 588 0020 03       		.uleb128 0x3
+ 589 0021 24       		.uleb128 0x24
+ 590 0022 00       		.byte	0
+ 591 0023 0B       		.uleb128 0xb
+ 592 0024 0B       		.uleb128 0xb
+ 593 0025 3E       		.uleb128 0x3e
+ 594 0026 0B       		.uleb128 0xb
+ 595 0027 03       		.uleb128 0x3
+ 596 0028 08       		.uleb128 0x8
+ 597 0029 00       		.byte	0
+ 598 002a 00       		.byte	0
+ 599 002b 04       		.uleb128 0x4
+ 600 002c 16       		.uleb128 0x16
+ 601 002d 00       		.byte	0
+ 602 002e 03       		.uleb128 0x3
+ 603 002f 0E       		.uleb128 0xe
+ 604 0030 3A       		.uleb128 0x3a
+ 605 0031 0B       		.uleb128 0xb
+ 606 0032 3B       		.uleb128 0x3b
+ 607 0033 0B       		.uleb128 0xb
+ 608 0034 49       		.uleb128 0x49
+ 609 0035 13       		.uleb128 0x13
+ 610 0036 00       		.byte	0
+ 611 0037 00       		.byte	0
+ 612 0038 05       		.uleb128 0x5
+ 613 0039 2E       		.uleb128 0x2e
+ 614 003a 01       		.byte	0x1
+ 615 003b 3F       		.uleb128 0x3f
+ 616 003c 0C       		.uleb128 0xc
+ 617 003d 03       		.uleb128 0x3
+ 618 003e 0E       		.uleb128 0xe
+ 619 003f 3A       		.uleb128 0x3a
+ 620 0040 0B       		.uleb128 0xb
+ 621 0041 3B       		.uleb128 0x3b
+ 622 0042 0B       		.uleb128 0xb
+ 623 0043 27       		.uleb128 0x27
+ 624 0044 0C       		.uleb128 0xc
+ 625 0045 11       		.uleb128 0x11
+ 626 0046 01       		.uleb128 0x1
+ARM GAS  /tmp/ccKJNRP3.s 			page 12
+
+
+ 627 0047 12       		.uleb128 0x12
+ 628 0048 01       		.uleb128 0x1
+ 629 0049 40       		.uleb128 0x40
+ 630 004a 06       		.uleb128 0x6
+ 631 004b 9642     		.uleb128 0x2116
+ 632 004d 0C       		.uleb128 0xc
+ 633 004e 01       		.uleb128 0x1
+ 634 004f 13       		.uleb128 0x13
+ 635 0050 00       		.byte	0
+ 636 0051 00       		.byte	0
+ 637 0052 06       		.uleb128 0x6
+ 638 0053 34       		.uleb128 0x34
+ 639 0054 00       		.byte	0
+ 640 0055 03       		.uleb128 0x3
+ 641 0056 0E       		.uleb128 0xe
+ 642 0057 3A       		.uleb128 0x3a
+ 643 0058 0B       		.uleb128 0xb
+ 644 0059 3B       		.uleb128 0x3b
+ 645 005a 0B       		.uleb128 0xb
+ 646 005b 49       		.uleb128 0x49
+ 647 005c 13       		.uleb128 0x13
+ 648 005d 02       		.uleb128 0x2
+ 649 005e 06       		.uleb128 0x6
+ 650 005f 00       		.byte	0
+ 651 0060 00       		.byte	0
+ 652 0061 07       		.uleb128 0x7
+ 653 0062 34       		.uleb128 0x34
+ 654 0063 00       		.byte	0
+ 655 0064 03       		.uleb128 0x3
+ 656 0065 0E       		.uleb128 0xe
+ 657 0066 3A       		.uleb128 0x3a
+ 658 0067 0B       		.uleb128 0xb
+ 659 0068 3B       		.uleb128 0x3b
+ 660 0069 0B       		.uleb128 0xb
+ 661 006a 49       		.uleb128 0x49
+ 662 006b 13       		.uleb128 0x13
+ 663 006c 00       		.byte	0
+ 664 006d 00       		.byte	0
+ 665 006e 08       		.uleb128 0x8
+ 666 006f 34       		.uleb128 0x34
+ 667 0070 00       		.byte	0
+ 668 0071 03       		.uleb128 0x3
+ 669 0072 08       		.uleb128 0x8
+ 670 0073 3A       		.uleb128 0x3a
+ 671 0074 0B       		.uleb128 0xb
+ 672 0075 3B       		.uleb128 0x3b
+ 673 0076 0B       		.uleb128 0xb
+ 674 0077 49       		.uleb128 0x49
+ 675 0078 13       		.uleb128 0x13
+ 676 0079 00       		.byte	0
+ 677 007a 00       		.byte	0
+ 678 007b 09       		.uleb128 0x9
+ 679 007c 34       		.uleb128 0x34
+ 680 007d 00       		.byte	0
+ 681 007e 03       		.uleb128 0x3
+ 682 007f 0E       		.uleb128 0xe
+ 683 0080 3A       		.uleb128 0x3a
+ARM GAS  /tmp/ccKJNRP3.s 			page 13
+
+
+ 684 0081 0B       		.uleb128 0xb
+ 685 0082 3B       		.uleb128 0x3b
+ 686 0083 0B       		.uleb128 0xb
+ 687 0084 49       		.uleb128 0x49
+ 688 0085 13       		.uleb128 0x13
+ 689 0086 3F       		.uleb128 0x3f
+ 690 0087 0C       		.uleb128 0xc
+ 691 0088 3C       		.uleb128 0x3c
+ 692 0089 0C       		.uleb128 0xc
+ 693 008a 00       		.byte	0
+ 694 008b 00       		.byte	0
+ 695 008c 0A       		.uleb128 0xa
+ 696 008d 34       		.uleb128 0x34
+ 697 008e 00       		.byte	0
+ 698 008f 03       		.uleb128 0x3
+ 699 0090 08       		.uleb128 0x8
+ 700 0091 3A       		.uleb128 0x3a
+ 701 0092 0B       		.uleb128 0xb
+ 702 0093 3B       		.uleb128 0x3b
+ 703 0094 0B       		.uleb128 0xb
+ 704 0095 49       		.uleb128 0x49
+ 705 0096 13       		.uleb128 0x13
+ 706 0097 3F       		.uleb128 0x3f
+ 707 0098 0C       		.uleb128 0xc
+ 708 0099 3C       		.uleb128 0x3c
+ 709 009a 0C       		.uleb128 0xc
+ 710 009b 00       		.byte	0
+ 711 009c 00       		.byte	0
+ 712 009d 0B       		.uleb128 0xb
+ 713 009e 34       		.uleb128 0x34
+ 714 009f 00       		.byte	0
+ 715 00a0 03       		.uleb128 0x3
+ 716 00a1 0E       		.uleb128 0xe
+ 717 00a2 3A       		.uleb128 0x3a
+ 718 00a3 0B       		.uleb128 0xb
+ 719 00a4 3B       		.uleb128 0x3b
+ 720 00a5 0B       		.uleb128 0xb
+ 721 00a6 49       		.uleb128 0x49
+ 722 00a7 13       		.uleb128 0x13
+ 723 00a8 3F       		.uleb128 0x3f
+ 724 00a9 0C       		.uleb128 0xc
+ 725 00aa 02       		.uleb128 0x2
+ 726 00ab 0A       		.uleb128 0xa
+ 727 00ac 00       		.byte	0
+ 728 00ad 00       		.byte	0
+ 729 00ae 0C       		.uleb128 0xc
+ 730 00af 34       		.uleb128 0x34
+ 731 00b0 00       		.byte	0
+ 732 00b1 03       		.uleb128 0x3
+ 733 00b2 08       		.uleb128 0x8
+ 734 00b3 3A       		.uleb128 0x3a
+ 735 00b4 0B       		.uleb128 0xb
+ 736 00b5 3B       		.uleb128 0x3b
+ 737 00b6 0B       		.uleb128 0xb
+ 738 00b7 49       		.uleb128 0x49
+ 739 00b8 13       		.uleb128 0x13
+ 740 00b9 3F       		.uleb128 0x3f
+ARM GAS  /tmp/ccKJNRP3.s 			page 14
+
+
+ 741 00ba 0C       		.uleb128 0xc
+ 742 00bb 02       		.uleb128 0x2
+ 743 00bc 0A       		.uleb128 0xa
+ 744 00bd 00       		.byte	0
+ 745 00be 00       		.byte	0
+ 746 00bf 00       		.byte	0
+ 747              		.section	.debug_loc,"",%progbits
+ 748              	.Ldebug_loc0:
+ 749              	.LLST0:
+ 750 0000 00000000 		.4byte	.LFB7
+ 751 0004 04000000 		.4byte	.LCFI0
+ 752 0008 0200     		.2byte	0x2
+ 753 000a 7D       		.byte	0x7d
+ 754 000b 00       		.sleb128 0
+ 755 000c 04000000 		.4byte	.LCFI0
+ 756 0010 F8000000 		.4byte	.LFE7
+ 757 0014 0200     		.2byte	0x2
+ 758 0016 7D       		.byte	0x7d
+ 759 0017 20       		.sleb128 32
+ 760 0018 00000000 		.4byte	0
+ 761 001c 00000000 		.4byte	0
+ 762              	.LLST1:
+ 763 0020 B8000000 		.4byte	.LVL16
+ 764 0024 BD000000 		.4byte	.LVL17-1
+ 765 0028 1D00     		.2byte	0x1d
+ 766 002a F5       		.byte	0xf5
+ 767 002b 07       		.uleb128 0x7
+ 768 002c 29       		.uleb128 0x29
+ 769 002d 03       		.byte	0x3
+ 770 002e 00000000 		.4byte	roll_prev_error
+ 771 0032 F6       		.byte	0xf6
+ 772 0033 04       		.byte	0x4
+ 773 0034 29       		.uleb128 0x29
+ 774 0035 1C       		.byte	0x1c
+ 775 0036 F7       		.byte	0xf7
+ 776 0037 30       		.uleb128 0x30
+ 777 0038 F4       		.byte	0xf4
+ 778 0039 30       		.uleb128 0x30
+ 779 003a 08       		.byte	0x8
+ 780 003b 7B14AE47 		.4byte	0x47ae147b
+ 781 003f E17A843F 		.4byte	0x3f847ae1
+ 782 0043 1B       		.byte	0x1b
+ 783 0044 F7       		.byte	0xf7
+ 784 0045 29       		.uleb128 0x29
+ 785 0046 9F       		.byte	0x9f
+ 786 0047 00000000 		.4byte	0
+ 787 004b 00000000 		.4byte	0
+ 788              	.LLST2:
+ 789 004f B8000000 		.4byte	.LVL16
+ 790 0053 BD000000 		.4byte	.LVL17-1
+ 791 0057 1D00     		.2byte	0x1d
+ 792 0059 F5       		.byte	0xf5
+ 793 005a 06       		.uleb128 0x6
+ 794 005b 29       		.uleb128 0x29
+ 795 005c 03       		.byte	0x3
+ 796 005d 00000000 		.4byte	pitch_prev_error
+ 797 0061 F6       		.byte	0xf6
+ARM GAS  /tmp/ccKJNRP3.s 			page 15
+
+
+ 798 0062 04       		.byte	0x4
+ 799 0063 29       		.uleb128 0x29
+ 800 0064 1C       		.byte	0x1c
+ 801 0065 F7       		.byte	0xf7
+ 802 0066 30       		.uleb128 0x30
+ 803 0067 F4       		.byte	0xf4
+ 804 0068 30       		.uleb128 0x30
+ 805 0069 08       		.byte	0x8
+ 806 006a 7B14AE47 		.4byte	0x47ae147b
+ 807 006e E17A843F 		.4byte	0x3f847ae1
+ 808 0072 1B       		.byte	0x1b
+ 809 0073 F7       		.byte	0xf7
+ 810 0074 29       		.uleb128 0x29
+ 811 0075 9F       		.byte	0x9f
+ 812 0076 00000000 		.4byte	0
+ 813 007a 00000000 		.4byte	0
+ 814              	.LLST3:
+ 815 007e 36000000 		.4byte	.LVL1
+ 816 0082 3A000000 		.4byte	.LVL2
+ 817 0086 0100     		.2byte	0x1
+ 818 0088 50       		.byte	0x50
+ 819 0089 3A000000 		.4byte	.LVL2
+ 820 008d F8000000 		.4byte	.LFE7
+ 821 0091 0100     		.2byte	0x1
+ 822 0093 57       		.byte	0x57
+ 823 0094 00000000 		.4byte	0
+ 824 0098 00000000 		.4byte	0
+ 825              	.LLST4:
+ 826 009c 50000000 		.4byte	.LVL4
+ 827 00a0 54000000 		.4byte	.LVL5
+ 828 00a4 0100     		.2byte	0x1
+ 829 00a6 50       		.byte	0x50
+ 830 00a7 54000000 		.4byte	.LVL5
+ 831 00ab F8000000 		.4byte	.LFE7
+ 832 00af 0100     		.2byte	0x1
+ 833 00b1 56       		.byte	0x56
+ 834 00b2 00000000 		.4byte	0
+ 835 00b6 00000000 		.4byte	0
+ 836              		.section	.debug_aranges,"",%progbits
+ 837 0000 1C000000 		.4byte	0x1c
+ 838 0004 0200     		.2byte	0x2
+ 839 0006 00000000 		.4byte	.Ldebug_info0
+ 840 000a 04       		.byte	0x4
+ 841 000b 00       		.byte	0
+ 842 000c 0000     		.2byte	0
+ 843 000e 0000     		.2byte	0
+ 844 0010 00000000 		.4byte	.LFB7
+ 845 0014 F8000000 		.4byte	.LFE7-.LFB7
+ 846 0018 00000000 		.4byte	0
+ 847 001c 00000000 		.4byte	0
+ 848              		.section	.debug_ranges,"",%progbits
+ 849              	.Ldebug_ranges0:
+ 850 0000 00000000 		.4byte	.LFB7
+ 851 0004 F8000000 		.4byte	.LFE7
+ 852 0008 00000000 		.4byte	0
+ 853 000c 00000000 		.4byte	0
+ 854              		.section	.debug_line,"",%progbits
+ARM GAS  /tmp/ccKJNRP3.s 			page 16
+
+
+ 855              	.Ldebug_line0:
+ 856 0000 E3000000 		.section	.debug_str,"MS",%progbits,1
+ 856      0200A700 
+ 856      00000201 
+ 856      FB0E0D00 
+ 856      01010101 
+ 857              	.LASF26:
+ 858 0000 726F6C6C 		.ascii	"roll_prev_error\000"
+ 858      5F707265 
+ 858      765F6572 
+ 858      726F7200 
+ 859              	.LASF21:
+ 860 0010 526F6C6C 		.ascii	"Roll\000"
+ 860      00
+ 861              	.LASF1:
+ 862 0015 646F7562 		.ascii	"double\000"
+ 862      6C6500
+ 863              	.LASF15:
+ 864 001c 726F6C6C 		.ascii	"roll_D\000"
+ 864      5F4400
+ 865              	.LASF13:
+ 866 0023 696E7438 		.ascii	"int8_t\000"
+ 866      5F7400
+ 867              	.LASF16:
+ 868 002a 70697463 		.ascii	"pitch_D\000"
+ 868      685F4400 
+ 869              	.LASF29:
+ 870 0032 726F6C6C 		.ascii	"roll_I\000"
+ 870      5F4900
+ 871              	.LASF0:
+ 872 0039 666C6F61 		.ascii	"float\000"
+ 872      7400
+ 873              	.LASF30:
+ 874 003f 70697463 		.ascii	"pitch_I\000"
+ 874      685F4900 
+ 875              	.LASF4:
+ 876 0047 756E7369 		.ascii	"unsigned char\000"
+ 876      676E6564 
+ 876      20636861 
+ 876      7200
+ 877              	.LASF34:
+ 878 0055 636F6E74 		.ascii	"control.c\000"
+ 878      726F6C2E 
+ 878      6300
+ 879              	.LASF6:
+ 880 005f 73686F72 		.ascii	"short unsigned int\000"
+ 880      7420756E 
+ 880      7369676E 
+ 880      65642069 
+ 880      6E7400
+ 881              	.LASF25:
+ 882 0072 7961775F 		.ascii	"yaw_controller_output\000"
+ 882      636F6E74 
+ 882      726F6C6C 
+ 882      65725F6F 
+ 882      75747075 
+ 883              	.LASF19:
+ARM GAS  /tmp/ccKJNRP3.s 			page 17
+
+
+ 884 0088 70697463 		.ascii	"pitch_error\000"
+ 884      685F6572 
+ 884      726F7200 
+ 885              	.LASF33:
+ 886 0094 474E5520 		.ascii	"GNU C 4.7.3 20121207 (release) [ARM/embedded-4_7-br"
+ 886      4320342E 
+ 886      372E3320 
+ 886      32303132 
+ 886      31323037 
+ 887 00c7 616E6368 		.ascii	"anch revision 194305]\000"
+ 887      20726576 
+ 887      6973696F 
+ 887      6E203139 
+ 887      34333035 
+ 888              	.LASF11:
+ 889 00dd 6C6F6E67 		.ascii	"long unsigned int\000"
+ 889      20756E73 
+ 889      69676E65 
+ 889      6420696E 
+ 889      7400
+ 890              	.LASF32:
+ 891 00ef 6C617374 		.ascii	"last_time\000"
+ 891      5F74696D 
+ 891      6500
+ 892              	.LASF27:
+ 893 00f9 70697463 		.ascii	"pitch_prev_error\000"
+ 893      685F7072 
+ 893      65765F65 
+ 893      72726F72 
+ 893      00
+ 894              	.LASF18:
+ 895 010a 726F6C6C 		.ascii	"roll_error\000"
+ 895      5F657272 
+ 895      6F7200
+ 896              	.LASF2:
+ 897 0115 756E7369 		.ascii	"unsigned int\000"
+ 897      676E6564 
+ 897      20696E74 
+ 897      00
+ 898              	.LASF36:
+ 899 0122 7069645F 		.ascii	"pid_controller\000"
+ 899      636F6E74 
+ 899      726F6C6C 
+ 899      657200
+ 900              	.LASF8:
+ 901 0131 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 901      206C6F6E 
+ 901      6720756E 
+ 901      7369676E 
+ 901      65642069 
+ 902              	.LASF20:
+ 903 0148 7961775F 		.ascii	"yaw_error\000"
+ 903      6572726F 
+ 903      7200
+ 904              	.LASF14:
+ 905 0152 696E7433 		.ascii	"int32_t\000"
+ 905      325F7400 
+ARM GAS  /tmp/ccKJNRP3.s 			page 18
+
+
+ 906              	.LASF10:
+ 907 015a 73697A65 		.ascii	"sizetype\000"
+ 907      74797065 
+ 907      00
+ 908              	.LASF7:
+ 909 0163 6C6F6E67 		.ascii	"long long int\000"
+ 909      206C6F6E 
+ 909      6720696E 
+ 909      7400
+ 910              	.LASF12:
+ 911 0171 63686172 		.ascii	"char\000"
+ 911      00
+ 912              	.LASF35:
+ 913 0176 2F686F6D 		.ascii	"/home/formica/Prog/C/freecopter-control\000"
+ 913      652F666F 
+ 913      726D6963 
+ 913      612F5072 
+ 913      6F672F43 
+ 914              	.LASF17:
+ 915 019e 7961775F 		.ascii	"yaw_D\000"
+ 915      4400
+ 916              	.LASF5:
+ 917 01a4 73686F72 		.ascii	"short int\000"
+ 917      7420696E 
+ 917      7400
+ 918              	.LASF31:
+ 919 01ae 7961775F 		.ascii	"yaw_I\000"
+ 919      4900
+ 920              	.LASF9:
+ 921 01b4 6C6F6E67 		.ascii	"long int\000"
+ 921      20696E74 
+ 921      00
+ 922              	.LASF3:
+ 923 01bd 7369676E 		.ascii	"signed char\000"
+ 923      65642063 
+ 923      68617200 
+ 924              	.LASF24:
+ 925 01c9 70697463 		.ascii	"pitch_controller_output\000"
+ 925      685F636F 
+ 925      6E74726F 
+ 925      6C6C6572 
+ 925      5F6F7574 
+ 926              	.LASF22:
+ 927 01e1 50697463 		.ascii	"Pitch\000"
+ 927      6800
+ 928              	.LASF28:
+ 929 01e7 7961775F 		.ascii	"yaw_prev_error\000"
+ 929      70726576 
+ 929      5F657272 
+ 929      6F7200
+ 930              	.LASF23:
+ 931 01f6 726F6C6C 		.ascii	"roll_controller_output\000"
+ 931      5F636F6E 
+ 931      74726F6C 
+ 931      6C65725F 
+ 931      6F757470 
+ 932              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.7.3 20121207 (release) [ARM/embedded-4_7-br
+ARM GAS  /tmp/ccKJNRP3.s 			page 19
+
+
+ARM GAS  /tmp/ccKJNRP3.s 			page 20
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 control.c
+     /tmp/ccKJNRP3.s:25     .text.pid_controller:00000000 $t
+     /tmp/ccKJNRP3.s:31     .text.pid_controller:00000000 pid_controller
+     /tmp/ccKJNRP3.s:244    .bss.KP:00000000 .LANCHOR0
+     /tmp/ccKJNRP3.s:231    .bss.KI:00000000 .LANCHOR1
+     /tmp/ccKJNRP3.s:212    .bss.KD:00000000 .LANCHOR2
+     /tmp/ccKJNRP3.s:238    .bss.roll_I:00000000 .LANCHOR3
+     /tmp/ccKJNRP3.s:270    .bss.pitch_I:00000000 .LANCHOR4
+     /tmp/ccKJNRP3.s:250    .bss.roll_controller_output:00000000 .LANCHOR5
+     /tmp/ccKJNRP3.s:263    .bss.pitch_controller_output:00000000 .LANCHOR6
+     /tmp/ccKJNRP3.s:257    .bss.roll_prev_error:00000000 .LANCHOR7
+     /tmp/ccKJNRP3.s:225    .bss.pitch_prev_error:00000000 .LANCHOR8
+     /tmp/ccKJNRP3.s:176    .text.pid_controller:000000f0 $d
+     /tmp/ccKJNRP3.s:215    .bss.KD:00000000 KD
+     /tmp/ccKJNRP3.s:234    .bss.KI:00000000 KI
+     /tmp/ccKJNRP3.s:247    .bss.KP:00000000 KP
+     /tmp/ccKJNRP3.s:198    .bss.last_time:00000000 last_time
+     /tmp/ccKJNRP3.s:204    .bss.yaw_I:00000000 yaw_I
+     /tmp/ccKJNRP3.s:273    .bss.pitch_I:00000000 pitch_I
+     /tmp/ccKJNRP3.s:241    .bss.roll_I:00000000 roll_I
+     /tmp/ccKJNRP3.s:221    .bss.yaw_prev_error:00000000 yaw_prev_error
+     /tmp/ccKJNRP3.s:228    .bss.pitch_prev_error:00000000 pitch_prev_error
+     /tmp/ccKJNRP3.s:260    .bss.roll_prev_error:00000000 roll_prev_error
+     /tmp/ccKJNRP3.s:209    .bss.yaw_controller_output:00000000 yaw_controller_output
+     /tmp/ccKJNRP3.s:266    .bss.pitch_controller_output:00000000 pitch_controller_output
+     /tmp/ccKJNRP3.s:253    .bss.roll_controller_output:00000000 roll_controller_output
+     /tmp/ccKJNRP3.s:195    .bss.last_time:00000000 $d
+     /tmp/ccKJNRP3.s:201    .bss.yaw_I:00000000 $d
+     /tmp/ccKJNRP3.s:210    .bss.yaw_controller_output:00000000 $d
+     /tmp/ccKJNRP3.s:216    .bss.KD:00000000 $d
+     /tmp/ccKJNRP3.s:218    .bss.yaw_prev_error:00000000 $d
+     /tmp/ccKJNRP3.s:224    .bss.pitch_prev_error:00000000 $d
+     /tmp/ccKJNRP3.s:235    .bss.KI:00000000 $d
+     /tmp/ccKJNRP3.s:237    .bss.roll_I:00000000 $d
+     /tmp/ccKJNRP3.s:248    .bss.KP:00000000 $d
+     /tmp/ccKJNRP3.s:254    .bss.roll_controller_output:00000000 $d
+     /tmp/ccKJNRP3.s:256    .bss.roll_prev_error:00000000 $d
+     /tmp/ccKJNRP3.s:267    .bss.pitch_controller_output:00000000 $d
+     /tmp/ccKJNRP3.s:269    .bss.pitch_I:00000000 $d
+                     .debug_frame:00000010 $d
+     /tmp/ccKJNRP3.s:194    .text.pid_controller:000000f8 $t
+
+UNDEFINED SYMBOLS
+__aeabi_fsub
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_dadd
+__aeabi_d2f
+__aeabi_f2iz
+Roll
+Pitch

@@ -81,8 +81,9 @@ CSRC = $(PORTSRC) \
        $(CHIBIOS)/os/various/chprintf.c \
        main.c \
        i2c_setup.c \
-       control.c \
-       blctrl20.c 
+       blctrl20.c
+#       control.c \
+       
       
        
 

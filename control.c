@@ -46,36 +46,58 @@
 #include "chvt.h"
 #include "control.h"
 
-extern int16_t Roll, Pitch, Yaw;	// Estimation from IMU
+extern float Roll, Pitch, Yaw;	// Estimation from IMU
 extern int16_t icu_ch[8];			// 1. Throttle - 2. Pitch - 3. Roll - 4. Yaw  (RPY are the PID References Signals)
 					// Throttle signal is not used in this file but directly summed in blctrl20.c
 
 int8_t roll_controller_output, pitch_controller_output, yaw_controller_output;
 
+float roll_prev_error, pitch_prev_error, yaw_prev_error;
+float roll_I, pitch_I, yaw_I;
+	
+int32_t last_time = 0;
+
+
+
+
 int8_t KP,KI,KD;				// PID Coefficient
 
 void pid_controller(void)
 {
-	static int16_t roll_last_error, pitch_last_error, yaw_last_error;
-	int16_t roll_error, pitch_error, yaw_error;
-	double roll_I_error, pitch_I_error, yaw_I_error;
-	double roll_D_error, pitch_D_error, yaw_D_error, dt;	
+	float roll_D, pitch_D, yaw_D, dt;	
+	float roll_error, pitch_error, yaw_error;
 	int32_t now;
-	static int32_t last_time = 0;
-
-	KP = 0.5;
-	KI = 1;
-	KD = 0;
+	KP = 10;
+	KI = 10;
+	KD = 10;
 	
-	roll_I_error = 0;
-	pitch_I_error = 0;
-	yaw_I_error = 0;
+//	roll_I_error = 0;
+//	pitch_I_error = 0;
+//	yaw_I_error = 0;
+	
+	roll_error = 0 - Roll;
+	pitch_error = 0 - Pitch;
+	yaw_error = 0 - Yaw;
+
+	roll_I = roll_I + roll_error*0.01;
+	pitch_I = pitch_I + pitch_error*0.01;
+
+	roll_D = (roll_error - roll_prev_error)/0.01;
+	pitch_D = (pitch_error - pitch_prev_error)/0.01;
+
+	roll_controller_output = (int8_t)(KP*roll_error + KI*roll_I + KD*roll_D);
+	pitch_controller_output = (int8_t)(KP*pitch_error + KI*pitch_I + KD*pitch_D);
+
+	roll_controller_output = (int8_t)roll_error;
+	pitch_controller_output = (int8_t)pitch_error;	
+
+
+	roll_prev_error = roll_error;
+	pitch_prev_error = pitch_error;
 	
 
 
-	now = chTimeNow();	
-	dt = (double)(now - last_time);
-	
+	/*
 	//error computation
 	roll_error = -(icu_ch[1] - 1000)/10 - (int16_t)(Roll/200);
 	pitch_error = (icu_ch[2] - 1000)/10 - (int16_t)(Pitch/200);
@@ -95,6 +117,6 @@ void pid_controller(void)
 	roll_controller_output = KP*roll_error + KI*roll_I_error + KD*roll_D_error;
 	pitch_controller_output = KP*pitch_error + KI*pitch_I_error + KD*pitch_D_error;
 	yaw_controller_output = KP*yaw_error + KI*yaw_I_error + KD*yaw_D_error;	
-  
+  */
 }
 	

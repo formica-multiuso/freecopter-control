@@ -50,7 +50,7 @@
 uint8_t m1,m2,m3,m4 = {0,0,0,0};
 
 extern int16_t icu_ch[8]; 
-extern int16_t roll_controller_output, pitch_controller_output, yaw_controller_output;
+extern int8_t roll_controller_output, pitch_controller_output, yaw_controller_output;
 
 static i2cflags_t a_errors[4] = {0,0,0,0};
 
@@ -72,25 +72,29 @@ void blctrl20_set_velocity(void)
 	i2cAcquireBus(&I2CD1);
 	
 
-	m1 = ((icu_ch[0]-600)/4) + yaw_controller_output - pitch_controller_output;	// FRONT MOTOR
+//	m1 = ((icu_ch[0]-600)/4) + yaw_controller_output - pitch_controller_output;	// FRONT MOTOR
+	m1 = 0;
 	status = i2cMasterTransmitTimeout(&I2CD1,MOTOR1_ADDR,&m1,1,NULL,0,tmo);
 	if (status != RDY_OK){
                  a_errors[0] = i2cGetErrors(&I2CD1);}
 	
 	
-	m2 = ((icu_ch[0]-600)/4) - yaw_controller_output - roll_controller_output;	//RIGHT MOTOR
+//	m2 = ((icu_ch[0]-600)/4) - yaw_controller_output - roll_controller_output;	//LEFT MOTOR
+	m2 = 100 + (uint8_t)roll_controller_output/2;
 	status = i2cMasterTransmitTimeout(&I2CD1,MOTOR2_ADDR,&m2,1,NULL,0,tmo);
 	if (status != RDY_OK){
                  a_errors[1] = i2cGetErrors(&I2CD1);}
 
 
-	m3 = ((icu_ch[0]-600)/4) + yaw_controller_output + pitch_controller_output;	//REAR MOTOR
+//	m3 = ((icu_ch[0]-600)/4) + yaw_controller_output + pitch_controller_output;	//REAR MOTOR
+	m3 = 0;
 	status = i2cMasterTransmitTimeout(&I2CD1,MOTOR3_ADDR,&m3,1,NULL,0,tmo);
 	if (status != RDY_OK){
                  a_errors[2] = i2cGetErrors(&I2CD1);}
 	
 
-	m4 = ((icu_ch[0]-600)/4) - yaw_controller_output + roll_controller_output;	//LEFT MOTOR
+//	m4 = ((icu_ch[0]-600)/4) - yaw_controller_output + roll_controller_output;	//RIGHT MOTOR
+	m4 = 100 + (uint8_t)roll_controller_output/2;
 	status = i2cMasterTransmitTimeout(&I2CD1,MOTOR4_ADDR,&m4,1,NULL,0,tmo);	
 	if (status != RDY_OK){
                  a_errors[3] = i2cGetErrors(&I2CD1);}

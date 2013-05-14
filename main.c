@@ -70,7 +70,16 @@
 
 extern uint8_t m1,m2,m3,m4;
 
-int16_t Roll, Pitch, Yaw;
+int8_t roll_controller_output, pitch_controller_output, yaw_controller_output;
+
+float roll_D, pitch_D, yaw_D;
+float roll_error, pitch_error, yaw_error;
+float roll_prev_error, pitch_prev_error, yaw_prev_error;
+float roll_I, pitch_I, yaw_I;
+
+int8_t KP,KI,KD;                                // PID Coefficient
+
+float Roll, Pitch, Yaw;
 
 static Mutex mtx_imu, mutex_motors;
 
@@ -513,7 +522,7 @@ static msg_t MotorsThread(void *arg) {
   while (TRUE) {
 	
 	chMtxLock(&mutex_motors);
-        pid_controller();
+        //pid_controller();
 	blctrl20_set_velocity();
 	chThdSleepMilliseconds(50);
 	chMtxUnlock();
@@ -610,14 +619,18 @@ int main(void) {
   
   chThdCreateStatic(waThread1, sizeof(waThread1), HIGHPRIO, Thread1, NULL);
 
-  chThdCreateStatic(waMotorsThread, sizeof(waMotorsThread), NORMALPRIO, MotorsThread, NULL);
+  //chThdCreateStatic(waMotorsThread, sizeof(waMotorsThread), NORMALPRIO, MotorsThread, NULL);
 
  
   spiAcquireBus(&SPID2);                        /* Acquire ownership of the bus.    */
   spiStart(&SPID2, &ls_spicfg);                 /* Setup transfer parameters.       */
   spiSelect(&SPID2);
 
- 
+
+  KP = 1;
+  KI = 1;
+  KD = 0;
+
   while (TRUE) {
 
 	while(!(SPID2.spi->SR & SPI_SR_RXNE)); 
@@ -627,16 +640,45 @@ int main(void) {
 //	Floating point calculation of Roll/Pitch/Yaw inside the microcontroller. Decomment next 6 lines if you want to implement
 //	the control Law.
 
-//	tempR = (uint32_t)((rxbuf_16bit[0] << 31) | (rxbuf_16bit[1] << 23) | (rxbuf_16bit[2] << 11) | rxbuf_16bit[3]);
-//	tempP = (uint32_t)((rxbuf_16bit[4] << 31) | (rxbuf_16bit[5] << 23) | (rxbuf_16bit[6] << 11) | rxbuf_16bit[7]);
-//	tempY = (uint32_t)((rxbuf_16bit[8] << 31) | (rxbuf_16bit[9] << 23) | (rxbuf_16bit[10] << 11) | rxbuf_16bit[11]);
+	tempR = (uint32_t)((rxbuf_16bit[0] << 31) | (rxbuf_16bit[1] << 23) | (rxbuf_16bit[2] << 11) | rxbuf_16bit[3]);
+	tempP = (uint32_t)((rxbuf_16bit[4] << 31) | (rxbuf_16bit[5] << 23) | (rxbuf_16bit[6] << 11) | rxbuf_16bit[7]);
+	tempY = (uint32_t)((rxbuf_16bit[8] << 31) | (rxbuf_16bit[9] << 23) | (rxbuf_16bit[10] << 11) | rxbuf_16bit[11]);
 		
-//	Roll = (*(float*)&tempR);
-//	Pitch = (*(float*)&tempP); 					
-//	Yaw = (*(float*)&tempY);
+	Roll = (*(float*)&tempR);
+	Pitch = (*(float*)&tempP); 					
+	Yaw = (*(float*)&tempY);
 	
 	// CONTROL LAW HERE
 	//++ (ROLL,PITCH,YAW ERRORS) -----> [CONTROLLER] -----> (MOTORS INPUT)
+	
+
+	// PID Control Law
+	
+	roll_error = 0 - Roll;
+        pitch_error = 0 - Pitch;
+        yaw_error = 0 - Yaw;
+
+        roll_I = roll_I + roll_error*0.01;
+        pitch_I = pitch_I + pitch_error*0.01;
+
+        roll_D = (roll_error - roll_prev_error)/0.01;
+        pitch_D = (pitch_error - pitch_prev_error)/0.01;
+
+        roll_controller_output = (int8_t)(KP*roll_error + KI*roll_I + KD*roll_D);
+        pitch_controller_output = (int8_t)(KP*pitch_error + KI*pitch_I + KD*pitch_D);
+
+        //roll_controller_output = (int8_t)roll_error;
+        //pitch_controller_output = (int8_t)pitch_error;
+
+
+        roll_prev_error = roll_error;
+        pitch_prev_error = pitch_error;
+
+
+	//-------------------------------------------------------------------
+
+	blctrl20_set_velocity();
+
 
 	palSetPad(IOPORT3,11);
 
@@ -661,7 +703,7 @@ int main(void) {
 	if(SDU1.config->usbp->state==USB_ACTIVE)
 	{
 //		chprintf((BaseChannel *)&SDU1,"S:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:%6d:E\r\n",rxbuf_16bit[0],rxbuf_16bit[1],rxbuf_16bit[2],rxbuf_16bit[3],rxbuf_16bit[4],rxbuf_16bit[5],rxbuf_16bit[6],rxbuf_16bit[7],rxbuf_16bit[8],rxbuf_16bit[9],rxbuf_16bit[10],rxbuf_16bit[11]);
-		chprintf((BaseChannel *)&SDU1, "S:%d:%d:%d:%d:%d:%d:%d:%d:E\r\n",icu_ch[0],icu_ch[1],icu_ch[2],icu_ch[3],icu_ch[4],icu_ch[5],icu_ch[6],icu_ch[7]);
+		chprintf((BaseChannel *)&SDU1, "S:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:%6D:E\r\n",rxbuf_16bit[0],rxbuf_16bit[1],rxbuf_16bit[2],rxbuf_16bit[3],rxbuf_16bit[4],rxbuf_16bit[5],rxbuf_16bit[6],rxbuf_16bit[7],rxbuf_16bit[8],rxbuf_16bit[9],rxbuf_16bit[10],rxbuf_16bit[11],(int8_t)Roll,(int8_t)Pitch,(int8_t)Yaw,icu_ch[3],icu_ch[4],roll_controller_output,pitch_controller_output,yaw_controller_output);
 
 	}
 
